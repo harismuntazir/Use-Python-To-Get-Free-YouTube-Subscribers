@@ -8,21 +8,31 @@ def getHeaders(session):
     return headers
 
 # fake verify view
-def verify(host, session, repeat):
-    for i in range(repeat):
+def verify(host, session):
+    while (True):
         base = "https://www."
         tail = "/aioverify.html?idVideo=maKl5kVcUbo"
         url = base + host + tail
         resp = requests.get(url, headers=getHeaders(session))
-        print(resp.text)
+
+        views = resp.text.split('views":')[1].split(",")[0]
+        finished = resp.text.split('finished":')[1].split(",")[0]
+        retry = resp.text.split('retry":')[1].split(",")[0]
+        if (finished == "true" or finished == "false" and retry == "true"):
+            print("[+] Subscription Activated")
+            break
+        else:
+            print("[-] Views: " + views)
+        
 
 # activate the subscription
 def finish(host, session):
     base = "https://www."
-    tail = "/aiofinish.html"
+    tail = "/account.html?sub=true"
     url = base + host + tail
     resp = requests.get(url, headers=getHeaders(session))
-    print(resp.text)
+    subs = resp.text.split("id='will-get-subs'>")[2].split("</b>")[0].strip()
+    print("You Will Get " + subs + " Subscribers")
 
 # login into the application
 def login(host, username, password):
@@ -31,6 +41,11 @@ def login(host, username, password):
     data = "?email=" + username + "&idchannel=" + password + "&isSignIn=true&name="
     url = base + host + tail + data
     resp = requests.get(url)
+    loggedIn = resp.text.split('ok":')[1].split(",")[0]
+    if (loggedIn == "true"):
+        print("[+] Logged In")
+    else:
+        print("[-] Login Failed")
     # return the JSESSIONID cookie
     return resp.headers["Set-Cookie"].split("JSESSIONID=")[1].split(";")[0]
 
@@ -44,6 +59,7 @@ def choosePlan(host, session, planId):
         print("[+] Activated")
     else:
         print("[-] Failed")
+
 
 
 # main
