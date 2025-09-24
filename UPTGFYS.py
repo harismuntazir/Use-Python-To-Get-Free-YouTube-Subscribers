@@ -62,7 +62,7 @@ def choosePlan(host, session, planId):
 
 
 
-# main
+# the is the starting point of everthing
 def main():
     # make pairs of hosts, usernames, passwords and channels
     hosts = {"1": "subscribers.video", "2": "submenow.com"}
